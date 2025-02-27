@@ -28,7 +28,8 @@ def train_ml_model(features, target, sequence_length=20):
     target = target.ravel() if target.ndim > 1 else target
     
     # Create sequences
-    X, y = create_sequences(np.column_stack((features_np, target)), sequence_length, target_col_idx=-1)
+    X = create_sequences(features_np, sequence_length)
+    y = target[sequence_length:]
     
     # Split into train and test sets
     train_size = int(0.8 * len(X))
