@@ -30,7 +30,7 @@ def main():
     df = generate_signals(df)
     df = execute_trade(df, predictions)
     
-    print(df[["Close", "MACD", "RSI", "Fib_0.618", "Final_Signal"]].tail())
+    print(df[["Close", "MACD", "RSI", "Fib_0.618", "ML_Signal", "Final_Signal"]].tail())
 
 if __name__ == "__main__":
     main()

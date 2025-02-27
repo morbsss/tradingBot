@@ -1,7 +1,7 @@
 import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import LSTM, Dense, Dropout # type: ignore
+from tensorflow.keras.models import load_model # type: ignore
 import yaml
 from src.utils import create_sequences
 
@@ -59,7 +59,7 @@ def train_ml_model(features, target, sequence_length=20):
     )
     
     # Save model
-    model.save("models/trained_models/lstm_model.h5")
+    model.save("models/trained_models/lstm_model.keras")
     return model
 
 def predict(model, features, sequence_length=20):
@@ -76,7 +76,8 @@ def predict(model, features, sequence_length=20):
     """
     # Convert to sequences
     X = create_sequences(features.values, sequence_length)
-    
+    print(X.shape)
+
     # Predict
     predictions = model.predict(X, verbose=0)
     return (predictions > 0.5).astype(int).ravel()  # Binary output
