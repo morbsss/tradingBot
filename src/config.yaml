@@ -1,0 +1,29 @@
+# API Keys
+x_api:
+  consumer_key: "HupiwTYDdvVXi9MoNx1fxpPD6"
+  consumer_secret: "SOdvPk38dZ3IscQqCqbX5Lqg2xNx68u82bj44XK8e42zp30Axu"
+  access_token: "1755240421503188992-mPiWKVabkJxObawGXq4521Fwb9jVAI"
+  access_token_secret: "W70HAuqGszoKohAu6T0IDyMwQ3r64Fuod3sTpTEcmwJXN"
+  bearer_token: "AAAAAAAAAAAAAAAAAAAAALIdzgEAAAAAPc0%2BR0KMJg3YFs7GrugExorqQzg%3D49RdxtIVknwLTgELbRliWW6PsvEWxjpWFjJT1RId4WTQ3z8XBp"
+
+# Data Parameters
+historical_data:
+  symbol: "AAPL"
+  timeframe: "1d"
+  source: "yahoo"  # e.g., yfinance
+
+# Technical Analysis Parameters
+macd:
+  fast_period: 12
+  slow_period: 26
+  signal_period: 9
+rsi:
+  period: 14
+fibonacci:
+  levels: [0.236, 0.382, 0.5, 0.618, 0.786]
+
+# ML Parameters
+ml_model:
+  type: "RandomForest"
+  n_estimators: 100
+  max_depth: 10

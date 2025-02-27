@@ -1,0 +1,11 @@
+pandas
+numpy
+ta
+scikit-learn
+requests
+pyyaml
+matplotlib
+joblib
+tensorflow
+keras
+torch
