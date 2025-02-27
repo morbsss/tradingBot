@@ -6,6 +6,7 @@ from src.ml_model import train_ml_model, predict
 from src.trading_logic import generate_signals, execute_trade
 
 def main():
+    sequence_length = 20
     # Fetch data
     df = fetch_historical_data("AAPL", "2024-01-01", "2025-02-26")
     # sentiment_df = fetch_x_sentiment("AAPL stock", max_tweets=100)
@@ -23,8 +24,10 @@ def main():
     target = (df["Close"].shift(-1) > df["Close"]).astype(int)  # Predict price increase
     
     # Train and predict
-    model = train_ml_model(features[:-1], target[:-1])
-    predictions = predict(model, features)
+    model = train_ml_model(features[:-1], target[:-1], sequence_length)   
+    predictions = predict(model, features, sequence_length)
+
+    df = df.iloc[sequence_length:sequence_length + len(predictions)].reset_index(drop=True)
     
     # Trading logic
     df = generate_signals(df)

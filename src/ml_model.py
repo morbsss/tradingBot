@@ -9,7 +9,7 @@ def load_model_config():
     with open("models/lstm_config.yaml", "r") as file:
         return yaml.safe_load(file)
 
-def train_ml_model(features, target, sequence_length=20):
+def train_ml_model(features, target, sequence_length):
     """
     Train an LSTM-based RNN model.
     
@@ -63,7 +63,7 @@ def train_ml_model(features, target, sequence_length=20):
     model.save("models/trained_models/lstm_model.keras")
     return model
 
-def predict(model, features, sequence_length=20):
+def predict(model, features, sequence_length):
     """
     Predict using the trained LSTM model.
     
@@ -77,7 +77,6 @@ def predict(model, features, sequence_length=20):
     """
     # Convert to sequences
     X = create_sequences(features.values, sequence_length)
-    print(X.shape)
 
     # Predict
     predictions = model.predict(X, verbose=0)

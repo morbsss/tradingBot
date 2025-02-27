@@ -22,5 +22,4 @@ def create_sequences(data, sequence_length, target_col_idx=None):
     X = np.array(X)
     if target_col_idx is not None:
         return X, np.array(y)
-    print(X)
     return X
