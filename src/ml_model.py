@@ -6,21 +6,10 @@ import yaml
 from src.utils import create_sequences
 
 def load_model_config():
-    with open("models/lstm_config.yaml", "r") as file:
+    with open("config.yaml", "r") as file:
         return yaml.safe_load(file)
 
 def train_ml_model(features, target, sequence_length):
-    """
-    Train an LSTM-based RNN model.
-    
-    Args:
-        features (pd.DataFrame): Features (e.g., MACD, RSI, sentiment).
-        target (np.ndarray): Target (e.g., price increase binary).
-        sequence_length (int): Number of time steps per sequence.
-    
-    Returns:
-        model: Trained Keras LSTM model.
-    """
     config = load_model_config()
     
     # Convert to numpy and ensure target is 1D
@@ -39,12 +28,12 @@ def train_ml_model(features, target, sequence_length):
     # Build LSTM model
     model = Sequential()
     model.add(LSTM(
-        units=config["model"]["lstm_units"],
+        units=config["LSTM"]["lstm_units"],
         return_sequences=False,  # Only return final output
         input_shape=(sequence_length, X.shape[2])  # (timesteps, features)
     ))
     model.add(Dropout(0.2))  # Prevent overfitting
-    model.add(Dense(units=config["model"]["dense_units"], activation="relu"))
+    model.add(Dense(units=config["LSTM"]["dense_units"], activation="relu"))
     model.add(Dense(units=1, activation="sigmoid"))  # Binary classification
     
     # Compile model
@@ -53,8 +42,8 @@ def train_ml_model(features, target, sequence_length):
     # Train model
     model.fit(
         X_train, y_train,
-        epochs=config["model"]["epochs"],
-        batch_size=config["model"]["batch_size"],
+        epochs=config["LSTM"]["epochs"],
+        batch_size=config["LSTM"]["batch_size"],
         validation_data=(X_test, y_test),
         verbose=1
     )

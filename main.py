@@ -8,7 +8,7 @@ from src.trading_logic import generate_signals, execute_trade
 def main():
     sequence_length = 20
     # Fetch data
-    df = fetch_historical_data("AAPL", "2024-01-01", "2025-02-26")
+    df = fetch_historical_data("ETH-USD", "2015-01-01", "2025-02-26")
     # sentiment_df = fetch_x_sentiment("AAPL stock", max_tweets=100)
     
     # Technical Analysis

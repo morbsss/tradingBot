@@ -27,3 +27,20 @@ ml_model:
   type: "RandomForest"
   n_estimators: 100
   max_depth: 10
+
+LSTM:
+  type: "LSTM"
+  sequence_length: 20
+  lstm_units: 50
+  dense_units: 25
+  epochs: 50
+  batch_size: 32
+
+xgboost:
+  type: "XGBClassifier"
+  max_depth: 6    # Maximum depth of trees
+  learning_rate: 0.1  # Step size shrinkage to prevent overfitting
+  n_estimators: 100  # Number of boosting rounds
+  subsample: 0.8    # Fraction of samples used for each tree
+  colsample_bytree: 0.8  # Fraction of features used for each tree
+  random_state: 42  # For reproducibility

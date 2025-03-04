@@ -17,5 +17,5 @@ def generate_signals(df):
 
 def execute_trade(df, model_predictions):
     df["ML_Signal"] = model_predictions
-    df["Final_Signal"] = df["Signal"] * df["ML_Signal"]  # Combine TA and ML signals
+    df["Final_Signal"] = df["Signal"] * df["ML_Signal"]
     return df

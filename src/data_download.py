@@ -1,10 +1,5 @@
 import pandas as pd
 import yfinance as yf
-import yaml
-import requests
-
-with open("src/config.yaml", "r") as file:
-    config = yaml.safe_load(file)
 
 def fetch_historical_data(symbol, start_date, end_date):
     stock = yf.Ticker(symbol)
@@ -44,6 +39,6 @@ def fetch_historical_data(symbol, start_date, end_date):
     # sentiment_scores = [analyze_sentiment(tweet.text) for tweet in tweets]
     # return pd.DataFrame({"timestamp": [t.created_at for t in tweets], "sentiment": sentiment_scores})
 
-def analyze_sentiment(text):
-    # Placeholder: Use a proper sentiment analysis model (e.g., VADER or transformers)
-    return 0.5  # Neutral score for demo
+# def analyze_sentiment(text):
+#     # Placeholder: Use a proper sentiment analysis model (e.g., VADER or transformers)
+#     return 0.5  # Neutral score for demo
