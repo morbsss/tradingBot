@@ -30,9 +30,9 @@ LSTM:
 
 xgboost:
   type: "XGBClassifier"
-  max_depth: 6    # Maximum depth of trees
-  learning_rate: 0.1  # Step size shrinkage to prevent overfitting
-  n_estimators: 100  # Number of boosting rounds
+  max_depth: 4    # Maximum depth of trees
+  learning_rate: 0.01  # Step size shrinkage to prevent overfitting
+  n_estimators: 200  # Number of boosting rounds
   subsample: 0.8    # Fraction of samples used for each tree
   colsample_bytree: 0.8  # Fraction of features used for each tree
   random_state: 42  # For reproducibility

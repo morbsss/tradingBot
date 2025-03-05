@@ -1,51 +1,76 @@
 import pandas as pd
+
+from sklearn.preprocessing import StandardScaler
+
 from src.data_download import fetch_historical_data#, fetch_x_sentiment
 from src.technical_analysis import calculate_technical_indicators
 from src.macro_analysis import process_macro_data
-from src.ml_model import train_ml_model, predict
+from src.ml_model import train_ml_model, predict, load_model_config
 from src.trading_logic import generate_signals, execute_trade
+from src.backtesting import compare_strategies
 
 def main():
-    sequence_length = 20
+    config = load_model_config()
+    sequence_length = config["LSTM"]["sequence_length"]
     # Fetch data
-    df = fetch_historical_data("ETH-USD", "2015-01-01", "2025-02-26")
+    df = fetch_historical_data("NVDA", "2015-01-01", "2025-02-26")
     # sentiment_df = fetch_x_sentiment("AAPL stock", max_tweets=100)
     
     # Technical Analysis
     df = calculate_technical_indicators(df)
-    
+
     # Macro Analysis
     # macro_df = process_macro_data(sentiment_df)
     # df = df.join(macro_df, how="left").fillna(0)
     # df['sentiment'] = 0.5
     
     # Prepare ML features
-    features = df[["MACD", "RSI", "Fib_0.618"]]
-    target = (df["Close"].shift(-1) > df["Close"]).astype(int)  # Predict price increase
+    features_cols = [
+        "MACD", "RSI", "Fib_0.618", "Volume", "Volume_MA_10", "Volume_Ratio", "Volume_MA_20", 
+        "SMA_50", "SMA_200", "EMA_20", "EMA_50", "BB_upper", "BB_lower", "BB_middle", 
+        "Stochastic_K", "Stochastic_D", "ROC_14"
+        ]
+    
+    target_col = "Target"
+    df[target_col] = (df["Close"].shift(-1) > df["Close"]).astype(int)
+
+    df_clean = df[features_cols + [target_col]].dropna()
+
+    # Extract features and target from the cleaned DataFrame
+    features = df_clean[features_cols]
+    target = df_clean[target_col]
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(features)
+    features_scaled = pd.DataFrame(X_scaled, columns=features.columns, index=features.index)
     
     # Train and predict
-    ltsm_model = train_ml_model(features[:-1], target[:-1], ml_model='LSTM', sequence_length=sequence_length)   
-    ltsm_predictions = predict(ltsm_model, features, ml_model='LSTM', sequence_length=sequence_length)
+    lstm_model = train_ml_model(features[:-sequence_length], target[:-sequence_length], ml_model='LSTM', sequence_length=sequence_length)   
+    lstm_predictions = predict(lstm_model, features, ml_model='LSTM', sequence_length=sequence_length)
 
-    xgb_model = train_ml_model(features, target, ml_model="XGBoost")
-    importance = xgb_model.feature_importances_
-    feature_names = features.columns
-    for name, imp in zip(feature_names, importance):
-        print(f"Feature: {name}, Importance: {imp:.4f}")
-    xgb_predictions = predict(xgb_model, features, ml_model="XGBoost")
-    
-    # Trading logic for LSTM
-    df_lstm = df.copy()
-    df_lstm = df_lstm.iloc[sequence_length:sequence_length + len(ltsm_predictions)].reset_index(drop=True)
-    df_lstm = generate_signals(df_lstm)
-    df_lstm = execute_trade(df_lstm, ltsm_predictions)
+    xgb_model = train_ml_model(features_scaled, target, ml_model="XGBoost")
+    xgb_predictions = predict(xgb_model, features_scaled, ml_model="XGBoost")
+    xgb_predictions = xgb_predictions[:len(lstm_predictions)]
 
-    df_xgb = df.copy()
-    df_xgb = generate_signals(df_xgb)
-    df_xgb = execute_trade(df_xgb, xgb_predictions)
+    df = df.iloc[sequence_length:sequence_length + len(lstm_predictions)].reset_index(drop=True)
+
+    df = generate_signals(df)
+
+    df["LSTM_Signal"] = lstm_predictions
+    df["XGB_Signal"] = xgb_predictions
+    # df["LSTM_Signal"] = df["LSTM_Signal"].replace({0: -1, 1: 1})
+    # df["XGB_Signal"] = df["XGB_Signal"].replace({0: -1, 1: 1})
+
+    print(df["LSTM_Signal"].value_counts())
+    print(df["XGB_Signal"].value_counts())
+    # Backtest and compare strategies
+    results = compare_strategies(df, cash=10000, commission=0.002)
+
+    # Print sample results for manual inspection
+    print("\nSample DataFrame with Signals:")
+    print(df[["Close", "Signal", "LSTM_Signal", "XGB_Signal"]].tail())
     
-    print(df_lstm[["Close", "MACD", "RSI", "Fib_0.618", "ML_Signal", "Final_Signal"]].tail())
-    print(df_xgb[["Close", "MACD", "RSI", "Fib_0.618", "ML_Signal", "Final_Signal"]].tail())
+    # print(df[["Close", "MACD", "RSI", "Fib_0.618", "Volume", "Volume_MA_10", "Volume_Ratio", "Volume_MA_20", "SMA_50", "SMA_200", "EMA_20", "EMA_50", "ML_Signal", "Final_Signal"]].tail())
 
 if __name__ == "__main__":
     main()

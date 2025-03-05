@@ -1,6 +1,8 @@
 import joblib
 
 from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
+
 from tensorflow.keras.models import Sequential # type: ignore
 from tensorflow.keras.layers import LSTM, Dense, Dropout # type: ignore
 from tensorflow.keras.models import load_model # type: ignore
@@ -26,8 +28,7 @@ def train_ml_model(features, target, ml_model, sequence_length=None):
     """
     config = load_model_config()
 
-    if ml_model == 'LSTM':
-    
+    if ml_model == 'LSTM':    
         # Convert to numpy and ensure target is 1D
         features_np = features.values
         target = target.ravel() if target.ndim > 1 else target
@@ -69,7 +70,6 @@ def train_ml_model(features, target, ml_model, sequence_length=None):
         return model
     
     elif ml_model == "XGBoost":
-        
         # Use features directly (no sequences needed for XGBoost)
         X = features.values
         y = target.ravel() if target.ndim > 1 else target
@@ -87,7 +87,6 @@ def train_ml_model(features, target, ml_model, sequence_length=None):
             subsample=config["xgboost"]["subsample"],
             colsample_bytree=config["xgboost"]["colsample_bytree"],
             random_state=config["xgboost"]["random_state"],
-            use_label_encoder=False,  # Avoid warnings in newer versions
             eval_metric="logloss"     # Binary classification metric
         )
         
@@ -116,7 +115,6 @@ def predict(model, features, ml_model, sequence_length=None):
         return (predictions > 0.5).astype(int).ravel()  # Binary output
 
     elif ml_model == "XGBoost":
-        features = features.dropna()
         X = features.values
         predictions = model.predict_proba(X)[:, 1]  # Probability of class 1 (price increase)
         return (predictions > 0.5).astype(int)
